@@ -1,0 +1,14 @@
+node_modules
+build
+dist
+.tmp
+.cache
+coverage
+.vscode
+.DS_Store
+.git
+.gitignore
+.env
+npm-debug.log
+yarn.lock
+pnpm-lock.yaml
