@@ -5,6 +5,7 @@ import cors from 'cors';
 //import morgan from 'morgan';               // optional but handy
 import dotenv from 'dotenv';
 import authRoutes from './routes/auth.js'; // you already have this
+import taskRoutes from './routes/tasks.js';
 
 dotenv.config();
 
@@ -29,6 +30,8 @@ app.get('/api/health', (_req, res) => res.json({ status: 'ok' }));
 
 // --- Routes ---
 app.use('/api/auth', authRoutes);
+app.use('/api/tasks', taskRoutes);
+
 
 // --- Global error guard (keeps JSON shape consistent) ---
 app.use((err, _req, res, _next) => {
