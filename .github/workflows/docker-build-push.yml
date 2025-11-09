@@ -2,7 +2,7 @@ name: Docker Build & Push to Hub
 
 on:
   push:
-    branches: [ main ]  # Or 'master' if that's your default
+    branches: [ dev ]  # Or 'master' if that's your default
 
 jobs:
   build-and-push:
