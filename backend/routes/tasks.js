@@ -30,7 +30,7 @@ router.post('/', async (req, res) => {
 });
 
 // PUT /api/tasks/:id - Update a task (Mark as done)
-router.put('/:id', async (req, res) => {
+router.patch('/:id', async (req, res) => {
   try {
     const { completed } = req.body;
     const task = await Task.findOneAndUpdate(
