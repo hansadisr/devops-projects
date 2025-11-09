@@ -48,6 +48,6 @@ export const api = {
   getTasks: () => request('/api/tasks'),
   createTask: (payload) => request('/api/tasks', { method: 'POST', body: JSON.stringify(payload) }),
   deleteTask: (taskId) => request(`/api/tasks/${taskId}`, { method: 'DELETE' }),
-  updateTask: (taskId, payload) => request(`/api/tasks/${taskId}`, { method: 'PATCH', body: JSON.stringify(payload) }),
+  updateTask: (taskId, payload) => request(`/api/tasks/${taskId}`, { method: 'PUT', body: JSON.stringify(payload) }),
 };
 // make change
