@@ -4,7 +4,7 @@ name: Build and Push Docker Images
 
 on:
   push:
-    branches: [ "main" ] # Runs when you push to main
+    branches: [ "master" ] # Runs when you push to main
 
 jobs:
   build:
@@ -30,7 +30,7 @@ jobs:
           file: ./backend/Dockerfile
           push: true
           # This automatically uses your username from the secret
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/devops-backend:latest
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/devops-projects-backend:latest
 
       - name: Build and push frontend image
         uses: docker/build-push-action@v4
@@ -39,4 +39,4 @@ jobs:
           file: ./frontend/Dockerfile
           push: true
           # This automatically uses your username from the secret
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/devops-frontend:latest
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/devops-projects-frontend:latest
