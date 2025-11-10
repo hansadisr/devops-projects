@@ -1,0 +1,26 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Build') {
+            steps {
+                echo "Building project..."
+                // e.g., npm install or mvn package or dotnet build
+            }
+        }
+
+        stage('Test') {
+            steps {
+                echo "Running tests..."
+                // e.g., npm test
+            }
+        }
+
+        stage('Deploy') {
+            steps {
+                echo "Deploying application..."
+                // e.g., docker compose up -d
+            }
+        }
+    }
+}
