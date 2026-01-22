@@ -1,11 +1,26 @@
 pipeline {
     agent any
 
+    options {
+        timeout(time: 30, unit: 'MINUTES')
+    }
+
     stages {
-        stage('Clone Repo') {
+        stage('Checkout') {
             steps {
-                git branch: 'master',
-                    url: 'https://github.com/hansadisr/devops-projects.git'
+                checkout([
+                    $class: 'GitSCM',
+                    branches: [[name: '*/master']],
+                    userRemoteConfigs: [[
+                        url: 'https://github.com/hansadisr/devops-projects.git'
+                    ]],
+                    extensions: [[
+                        $class: 'CloneOption',
+                        shallow: true,
+                        depth: 1,
+                        timeout: 30
+                    ]]
+                ])
             }
         }
 
@@ -22,5 +37,3 @@ pipeline {
         }
     }
 }
-
-
