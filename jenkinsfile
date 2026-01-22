@@ -1,21 +1,26 @@
 pipeline {
     agent any
+
     stages {
-        stage('Build') {
+        stage('Clone Repo') {
             steps {
-                echo 'Building...'
+                git branch: 'master',
+                    url: 'https://github.com/hansadisr/devops-projects.git'
             }
         }
-        stage('Test') {
+
+        stage('Build Docker Images') {
             steps {
-                echo 'Testing...'
+                sh 'docker-compose build'
             }
         }
-        stage('Deploy') {
+
+        stage('Run Containers') {
             steps {
-                echo 'Deploying...'
+                sh 'docker-compose up -d'
             }
         }
     }
 }
+
 
