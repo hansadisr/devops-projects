@@ -6,8 +6,14 @@ pipeline {
             steps {
                 echo "🧹 Cleaning old containers..."
                 sh '''
+                    # Stop any containers using the same ports
+                    docker ps -a -q --filter "publish=5000" | xargs -r docker stop || true
+                    docker ps -a -q --filter "publish=5000" | xargs -r docker rm || true
+                    docker ps -a -q --filter "publish=3000" | xargs -r docker stop || true
+                    docker ps -a -q --filter "publish=3000" | xargs -r docker rm || true
+                    
+                    # Clean up compose stack
                     docker compose down --volumes --remove-orphans || true
-                    docker rm -f myapp-mongo myapp-backend myapp-frontend 2>/dev/null || true
                     docker volume prune -f || true
                 '''
             }
