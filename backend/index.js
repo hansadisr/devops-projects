@@ -14,11 +14,11 @@ const app = express();
 // --- Config ---
 const PORT = process.env.PORT || 5000;
 const MONGO_URI = process.env.MONGO_URI || 'mongodb://mongo:27017/tms';
-//mongoose.connect(MONGO_URI);
+mongoose.connect(MONGO_URI);
 const CORS_ORIGINS = [
-  'http://localhost:3000',  // CRA dev server (what you want)
-  'http://localhost:5173',  // just in case you switch back
-  'http://localhost'
+  'http://localhost:3000',
+  'http://3.218.208.90:3000',  // EC2 frontend
+  'http://hansadi-devops-project-2026.s3-website-us-east-1.amazonaws.com'
 ];
 
 // --- Middleware ---

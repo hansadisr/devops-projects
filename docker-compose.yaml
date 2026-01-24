@@ -2,7 +2,7 @@ services:
   mongo:
     image: mongo:6
     ports:
-      - "27018:27017"
+      - "27017:27017"
     volumes:
       - mongo-data:/data/db
 
@@ -27,7 +27,7 @@ services:
       context: ./frontend
       dockerfile: Dockerfile     # <— single Dockerfile, the one above
     environment:
-      - REACT_APP_API_URL=http://localhost:5000
+      - REACT_APP_API_URL=http://3.218.208.90:5000
       - CHOKIDAR_USEPOLLING=true
       - WATCHPACK_POLLING=true
     ports:
