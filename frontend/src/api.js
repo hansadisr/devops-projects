@@ -16,7 +16,9 @@ export const api = {
   login:  (p) => send('/api/auth/login',  p),
 };*/
 
-const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+// Use /api prefix - nginx will proxy to backend container
+const API_URL = process.env.REACT_APP_API_URL || '';
+
 
 async function request(path, options = {}) {
   const token = localStorage.getItem('token');

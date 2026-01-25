@@ -15,6 +15,11 @@ are provided in the case where you need to modify one of these values, either
 for performance reasons or to account for the specific environment where these
 ``aws s3`` commands are being run.
 
+.. note::
+   S3 commands have an option to use a custom endpoint using ``--endpoint-url``.
+   This overrides the default endpoint the command will use.
+   Use caution when configuring this parameter as it can cause unintended behavior including S3 redirect issues.
+   See `Service-specific endpoints <https://docs.aws.amazon.com/sdkref/latest/guide/feature-ss-endpoints.html>`_ page in the *AWS SDK reference guide* for more information.
 
 Configuration Values
 ====================
@@ -381,6 +386,50 @@ increase throughput. The ``target_bandwidth`` configuration may make
 adjustments mid-transfer command in order to increase throughput and reach the
 requested bandwidth.
 
+
+should_stream
+-------------
+.. note::
+   This configuration option is only supported when the ``preferred_transfer_client``
+   configuration value is set to or resolves to ``crt``. The ``classic`` transfer
+   client does not support this configuration option.
+
+**Default** - ``false``
+
+If set to ``true``, the CRT client will skip buffering parts in-memory before
+sending PUT requests.
+
+
+disk_throughput
+---------------
+.. note::
+   This configuration option is only supported when the ``preferred_transfer_client``
+   configuration value is set to or resolves to ``crt``. The ``classic`` transfer
+   client does not support this configuration option.
+
+**Default** - ``10.0``
+
+The estimated target disk throughput. This value is only applied if
+``should_stream`` is set to ``true``. This value can be specified using
+the same semantics as ``target_throughput``, that is either as the
+number of bytes per second as an integer, or using a rate suffix.
+
+
+direct_io
+---------
+.. note::
+   This configuration option is only supported when the ``preferred_transfer_client``
+   configuration value is set to or resolves to ``crt``. The ``classic`` transfer
+   client does not support this configuration option.
+
+.. note::
+   This configuration option is only supported on Linux.
+
+**Default** - ``false``
+
+If set to ``true``, the CRT client will enable direct IO to bypass the OS
+cache when sending PUT requests. Enabling direct IO may be useful in cases
+where the disk IO outperforms the kernel cache.
 
 Experimental Configuration Values
 =================================

@@ -1,24 +1,26 @@
-# One Dockerfile, runs CRA dev server on 3000
-FROM node:20-alpine
+# Multi-stage build for production
+FROM node:20-alpine AS builder
 
 WORKDIR /app
 
-# Install deps first (cache-friendly)
+# Install dependencies
 COPY package*.json ./
-RUN npm install
-#RUN npm ci
+RUN npm ci --only=production
 
-
-# Copy source
+# Copy source and build
 COPY . .
+RUN npm run build
 
-# CRA dev server config
-ENV PORT=3000
-# helps file watching on Windows/WSL
-ENV CHOKIDAR_USEPOLLING=true
-ENV WATCHPACK_POLLING=true
+# Production stage with nginx
+FROM nginx:alpine
 
+# Copy built files
+COPY --from=builder /app/build /usr/share/nginx/html
 
-EXPOSE 3000
-CMD ["npm", "start"]
+# Copy nginx configuration
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+
+EXPOSE 80
+
+CMD ["nginx", "-g", "daemon off;"]
 
