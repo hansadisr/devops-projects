@@ -281,6 +281,8 @@ body {
   border-radius: 16px;
   border: 2px dashed #cbd5e0;
   transition: all 0.3s ease;
+  align-items: center;
+  flex-wrap: wrap;
 }
 
 .task-create-form:hover {
@@ -290,7 +292,8 @@ body {
 }
 
 .task-input {
-  flex-grow: 1;
+  flex: 1;
+  min-width: 250px;
   padding: 14px 18px;
   border: 2px solid #e2e8f0;
   border-radius: 12px;
@@ -306,12 +309,13 @@ body {
 }
 
 .date-input {
-  padding: 14px;
+  padding: 14px 16px;
   border: 2px solid #e2e8f0;
   border-radius: 12px;
-  font-size: 16px;
+  font-size: 14px;
   transition: all 0.3s ease;
   background: white;
+  min-width: 160px;
 }
 
 .date-input:focus {
@@ -321,12 +325,13 @@ body {
 }
 
 .add-button {
-  padding: 14px 24px;
+  padding: 14px 28px;
   background: linear-gradient(45deg, #48bb78, #38a169);
   color: white;
   border: none;
   border-radius: 12px;
   font-weight: 600;
+  font-size: 15px;
   cursor: pointer;
   transition: all 0.3s ease;
   white-space: nowrap;
@@ -767,14 +772,14 @@ body {
 
 /* Priority Styles */
 .priority-select {
-  padding: 12px 16px;
+  padding: 14px 16px;
   border: 2px solid #e2e8f0;
   border-radius: 12px;
   font-size: 14px;
   background: white;
   cursor: pointer;
   transition: all 0.3s ease;
-  min-width: 140px;
+  min-width: 150px;
 }
 
 .priority-select:focus {
