@@ -1,26 +1,21 @@
-# Multi-stage build for production
-FROM node:20-alpine AS builder
+# Development Dockerfile for React
+FROM node:20-alpine
 
 WORKDIR /app
 
 # Install dependencies
 COPY package*.json ./
-RUN npm ci --only=production
+RUN npm install
 
-# Copy source and build
+# Copy source
 COPY . .
-RUN npm run build
 
-# Production stage with nginx
-FROM nginx:alpine
+# CRA dev server config
+ENV PORT=3000
+ENV CHOKIDAR_USEPOLLING=true
+ENV WATCHPACK_POLLING=true
 
-# Copy built files
-COPY --from=builder /app/build /usr/share/nginx/html
+EXPOSE 3000
 
-# Copy nginx configuration
-COPY nginx.conf /etc/nginx/conf.d/default.conf
-
-EXPOSE 80
-
-CMD ["nginx", "-g", "daemon off;"]
+CMD ["npm", "start"]
 

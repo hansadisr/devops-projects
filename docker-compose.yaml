@@ -18,17 +18,25 @@ services:
       - "5000:5000"
     depends_on:
       - mongo
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
 
   frontend:
     build:
       context: ./frontend
       dockerfile: Dockerfile
     environment:
-      - REACT_APP_API_URL=http://localhost:5000
+      - REACT_APP_API_URL=http://3.218.208.90:5000
+      - CHOKIDAR_USEPOLLING=true
+      - WATCHPACK_POLLING=true
     ports:
-      - "80:80"              # Serve on port 80 (standard HTTP)
+      - "3000:3000"
     depends_on:
       - api
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
 
 volumes:
   mongo-data:
