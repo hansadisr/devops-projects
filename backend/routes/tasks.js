@@ -18,11 +18,11 @@ router.get('/', async (req, res) => {
 // POST /api/tasks - Create a new task
 router.post('/', async (req, res) => {
   try {
-    const { title, dueDate } = req.body;
+    const { title, dueDate, priority } = req.body;
     if (!title) {
       return res.status(400).json({ message: 'Title is required' });
     }
-    const task = await Task.create({ title, dueDate, user: req.user.uid });
+    const task = await Task.create({ title, dueDate, priority: priority || 'Medium', user: req.user.uid });
     res.status(201).json(task);
   } catch {
     res.status(500).json({ message: 'Server error' });
@@ -32,10 +32,13 @@ router.post('/', async (req, res) => {
 // PUT /api/tasks/:id - Update a task (Mark as done)
 router.patch('/:id', async (req, res) => {
   try {
-    const { completed } = req.body;
+    const { completed, priority } = req.body;
+    const updateData = {};
+    if (completed !== undefined) updateData.completed = completed;
+    if (priority !== undefined) updateData.priority = priority;
     const task = await Task.findOneAndUpdate(
       { _id: req.params.id, user: req.user.uid },
-      { completed },
+      updateData,
       { new: true }
     );
     if (!task) {

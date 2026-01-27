@@ -5,6 +5,7 @@ export default function Tasks() {
   const [tasks, setTasks] = useState([]);
   const [newTitle, setNewTitle] = useState('');
   const [dueDate, setDueDate] = useState('');
+  const [priority, setPriority] = useState('Medium');
   const [error, setError] = useState('');
 
   useEffect(() => {
@@ -17,12 +18,13 @@ export default function Tasks() {
     e.preventDefault();
     setError('');
     try {
-      const payload = { title: newTitle, dueDate: dueDate || null };
+      const payload = { title: newTitle, dueDate: dueDate || null, priority };
       const createdTask = await api.createTask(payload);
       const sortedTasks = [...tasks, createdTask].sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate));
       setTasks(sortedTasks);
       setNewTitle('');
       setDueDate('');
+      setPriority('Medium');
     } catch (err) {
       setError(err.message);
     }
@@ -146,6 +148,16 @@ export default function Tasks() {
           className="date-input"
           title="Due date (optional)"
         />
+        <select 
+          value={priority}
+          onChange={e => setPriority(e.target.value)}
+          className="priority-select"
+          title="Priority"
+        >
+          <option value="Low">🟢 Low</option>
+          <option value="Medium">🟡 Medium</option>
+          <option value="High">🔴 High</option>
+        </select>
         <button type="submit" className="add-button">
           Add Task ➕
         </button>
@@ -183,7 +195,15 @@ export default function Tasks() {
                 <ul className="task-list">
                   {groupedIncompleteTasks[date].map(task => (
                     <li key={task._id} className="task-item">
-                      <span className="task-content">{task.title}</span>
+                      <div className="task-content">
+                        <span className={`priority-badge priority-${task.priority?.toLowerCase()}`}>
+                          {task.priority === 'High' && '🔴'} 
+                          {task.priority === 'Medium' && '🟡'}
+                          {task.priority === 'Low' && '🟢'}
+                          {task.priority || 'Medium'}
+                        </span>
+                        <span>{task.title}</span>
+                      </div>
                       <div className="task-actions">
                         <button 
                           onClick={() => handleMarkAsDone(task._id)} 
@@ -214,9 +234,15 @@ export default function Tasks() {
           <ul className="task-list">
             {completedTasks.map(task => (
               <li key={task._id} className="task-item completed-task">
-                <span className="task-content completed-content">
-                  {task.title}
-                </span>
+                <div className="task-content completed-content">
+                  <span className={`priority-badge priority-${task.priority?.toLowerCase()}`}>
+                    {task.priority === 'High' && '🔴'} 
+                    {task.priority === 'Medium' && '🟡'}
+                    {task.priority === 'Low' && '🟢'}
+                    {task.priority || 'Medium'}
+                  </span>
+                  <span>{task.title}</span>
+                </div>
                 <button 
                   onClick={() => handleDelete(task._id)} 
                   className="task-button delete-button"
