@@ -2,6 +2,16 @@ pipeline {
     agent any
 
     stages {
+        stage('Pull Latest Code') {
+            steps {
+                echo "📥 Pulling latest code from GitHub..."
+                sh '''
+                    cd /var/lib/jenkins/workspace/task-manager-pipeline
+                    git pull origin master
+                '''
+            }
+        }
+
         stage('Cleanup Old Containers') {
             steps {
                 echo "🧹 Cleaning old containers..."
