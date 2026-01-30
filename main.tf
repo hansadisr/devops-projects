@@ -98,7 +98,7 @@ resource "aws_key_pair" "taskflow_key" {
 # 2. Create the EC2 Instance (The Server)
 resource "aws_instance" "backend_server" {
   ami           = "ami-053b0d53c279acc90" # Ubuntu in us-east-1
-  instance_type = "t3.micro" # Free Tier
+  instance_type = "t3.small" # 2 vCPU, 2 GiB RAM
   key_name      = aws_key_pair.taskflow_key.key_name
   vpc_security_group_ids = [aws_security_group.backend_sg.id]
 
@@ -110,4 +110,27 @@ resource "aws_instance" "backend_server" {
 # 3. Output the IP Address
 output "backend_public_ip" {
   value = aws_instance.backend_server.public_ip
+}
+
+# Output the instance ID
+output "backend_instance_id" {
+  value       = aws_instance.backend_server.id
+  description = "EC2 instance ID"
+}
+
+# Output the S3 bucket name
+output "s3_bucket_name" {
+  value       = aws_s3_bucket.my_devops_bucket.id
+  description = "S3 bucket name for frontend hosting"
+}
+
+# Output complete application URLs
+output "application_urls" {
+  value = {
+    frontend_s3  = "http://${aws_s3_bucket_website_configuration.hosting.website_endpoint}"
+    frontend_ec2 = "http://${aws_instance.backend_server.public_ip}:3000"
+    backend_api  = "http://${aws_instance.backend_server.public_ip}:5000"
+    ssh_command  = "ssh -i taskflow-key ubuntu@${aws_instance.backend_server.public_ip}"
+  }
+  description = "Application access URLs and SSH command"
 }

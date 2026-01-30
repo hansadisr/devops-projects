@@ -1,0 +1,237 @@
+---
+- name: Configure and Deploy TaskFlow Application on EC2
+  hosts: ec2_instances
+  become: yes
+  gather_facts: yes
+  
+  vars:
+    docker_compose_version: "2.24.5"
+    app_dir: "/home/ubuntu/taskflow"
+    mongodb_data_dir: "/var/lib/mongodb-data"
+
+  tasks:
+    - name: Update apt cache
+      apt:
+        update_cache: yes
+        cache_valid_time: 3600
+
+    - name: Install required system packages
+      apt:
+        name:
+          - apt-transport-https
+          - ca-certificates
+          - curl
+          - software-properties-common
+          - gnupg
+          - lsb-release
+          - python3-pip
+          - git
+          - ufw
+        state: present
+        update_cache: yes
+
+    - name: Add Docker GPG key
+      apt_key:
+        url: https://download.docker.com/linux/ubuntu/gpg
+        state: present
+
+    - name: Add Docker repository
+      apt_repository:
+        repo: "deb [arch=amd64] https://download.docker.com/linux/ubuntu {{ ansible_distribution_release }} stable"
+        state: present
+
+    - name: Install Docker CE
+      apt:
+        name:
+          - docker-ce
+          - docker-ce-cli
+          - containerd.io
+        state: present
+        update_cache: yes
+
+    - name: Start and enable Docker service
+      systemd:
+        name: docker
+        state: started
+        enabled: yes
+
+    - name: Add ubuntu user to docker group
+      user:
+        name: ubuntu
+        groups: docker
+        append: yes
+
+    - name: Install Docker Compose
+      get_url:
+        url: "https://github.com/docker/compose/releases/download/v{{ docker_compose_version }}/docker-compose-{{ ansible_system }}-{{ ansible_machine }}"
+        dest: /usr/local/bin/docker-compose
+        mode: '0755'
+
+    - name: Configure firewall - Allow SSH
+      ufw:
+        rule: allow
+        port: '22'
+        proto: tcp
+
+    - name: Configure firewall - Allow HTTP
+      ufw:
+        rule: allow
+        port: '80'
+        proto: tcp
+
+    - name: Configure firewall - Allow HTTPS
+      ufw:
+        rule: allow
+        port: '443'
+        proto: tcp
+
+    - name: Configure firewall - Allow Backend (5000)
+      ufw:
+        rule: allow
+        port: '5000'
+        proto: tcp
+
+    - name: Configure firewall - Allow Frontend (3000)
+      ufw:
+        rule: allow
+        port: '3000'
+        proto: tcp
+
+    - name: Enable UFW
+      ufw:
+        state: enabled
+        policy: deny
+
+    - name: Create application directory
+      file:
+        path: "{{ app_dir }}"
+        state: directory
+        owner: ubuntu
+        group: ubuntu
+        mode: '0755'
+
+    - name: Create MongoDB data directory
+      file:
+        path: "{{ mongodb_data_dir }}"
+        state: directory
+        owner: ubuntu
+        group: ubuntu
+        mode: '0755'
+
+    - name: Stop and remove old containers
+      shell: |
+        docker stop $(docker ps -aq) 2>/dev/null || true
+        docker rm $(docker ps -aq) 2>/dev/null || true
+      ignore_errors: yes
+
+    - name: Remove old images (optional cleanup)
+      shell: docker image prune -af
+      ignore_errors: yes
+
+    - name: Log in to Docker Hub
+      docker_login:
+        username: "{{ lookup('env', 'DOCKER_HUB_CREDENTIALS_USR') }}"
+        password: "{{ lookup('env', 'DOCKER_HUB_CREDENTIALS_PSW') }}"
+      become: no
+      delegate_to: localhost
+      run_once: true
+
+    - name: Pull backend Docker image
+      docker_image:
+        name: "{{ docker_hub_repo }}-backend"
+        tag: "{{ image_tag }}"
+        source: pull
+
+    - name: Pull frontend Docker image
+      docker_image:
+        name: "{{ docker_hub_repo }}-frontend"
+        tag: "{{ image_tag }}"
+        source: pull
+
+    - name: Pull MongoDB image
+      docker_image:
+        name: mongo
+        tag: "6"
+        source: pull
+
+    - name: Create Docker network
+      docker_network:
+        name: taskflow-network
+        state: present
+
+    - name: Run MongoDB container
+      docker_container:
+        name: mongo
+        image: mongo:6
+        state: started
+        restart_policy: always
+        networks:
+          - name: taskflow-network
+        ports:
+          - "27017:27017"
+        volumes:
+          - "{{ mongodb_data_dir }}:/data/db"
+
+    - name: Wait for MongoDB to be ready
+      wait_for:
+        host: localhost
+        port: 27017
+        delay: 5
+        timeout: 60
+
+    - name: Run backend container
+      docker_container:
+        name: taskflow-backend
+        image: "{{ docker_hub_repo }}-backend:{{ image_tag }}"
+        state: started
+        restart_policy: always
+        networks:
+          - name: taskflow-network
+        ports:
+          - "5000:5000"
+        env:
+          MONGO_URI: "mongodb://mongo:27017/tms"
+          JWT_SECRET: "{{ lookup('env', 'JWT_SECRET') | default('your-production-secret-change-me', true) }}"
+          PORT: "5000"
+          NODE_ENV: "production"
+        links:
+          - mongo
+
+    - name: Wait for backend to be ready
+      wait_for:
+        host: localhost
+        port: 5000
+        delay: 5
+        timeout: 60
+
+    - name: Run frontend container
+      docker_container:
+        name: taskflow-frontend
+        image: "{{ docker_hub_repo }}-frontend:{{ image_tag }}"
+        state: started
+        restart_policy: always
+        networks:
+          - name: taskflow-network
+        ports:
+          - "3000:80"
+        env:
+          REACT_APP_API_URL: "http://{{ ansible_host }}:5000"
+
+    - name: Display deployment information
+      debug:
+        msg:
+          - "=================================="
+          - "Deployment Successful!"
+          - "=================================="
+          - "Frontend: http://{{ ansible_host }}:3000"
+          - "Backend: http://{{ ansible_host }}:5000"
+          - "=================================="
+
+    - name: Check running containers
+      command: docker ps
+      register: docker_ps_output
+      changed_when: false
+
+    - name: Display running containers
+      debug:
+        var: docker_ps_output.stdout_lines

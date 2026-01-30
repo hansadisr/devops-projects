@@ -25,7 +25,17 @@ app.use(express.json());
 app.use(cors({ origin: CORS_ORIGINS }));
 //app.use(morgan('dev')); // optional
 
-// --- Health check (for quick tests) ---
+// --- Health check endpoints ---
+app.get('/health', (_req, res) => {
+  const healthcheck = {
+    uptime: process.uptime(),
+    message: 'OK',
+    timestamp: Date.now(),
+    database: mongoose.connection.readyState === 1 ? 'connected' : 'disconnected'
+  };
+  res.status(200).json(healthcheck);
+});
+
 app.get('/api/health', (_req, res) => res.json({ status: 'ok' }));
 
 // --- Routes ---
