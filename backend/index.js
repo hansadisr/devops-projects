@@ -16,7 +16,8 @@ const PORT = process.env.PORT || 5000;
 const MONGO_URI = process.env.MONGO_URI || 'mongodb://mongo:27017/tms';
 const CORS_ORIGINS = [
   'http://localhost:3000',
-  'http://3.218.208.90:3000',  // EC2 frontend
+  'http://13.218.98.235:3000',  // EC2 frontend
+  'http://3.218.208.90:3000',
   'http://hansadi-devops-project-2026.s3-website-us-east-1.amazonaws.com'
 ];
 

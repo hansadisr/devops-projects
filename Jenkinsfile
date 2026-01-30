@@ -134,8 +134,6 @@ EOF
                 echo "✅ Verifying deployment..."
                 script {
                     sh '''
-                        EC2_IP=$(cat ${TERRAFORM_DIR}/ec2_ip.txt)
-                        
                         echo "🌐 Application URLs:"
                         echo "Frontend: http://${EC2_IP}:3000"
                         echo "Backend API: http://${EC2_IP}:5000"
