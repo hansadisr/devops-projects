@@ -16,7 +16,7 @@ export const api = {
   login:  (p) => send('/api/auth/login',  p),
 };*/
 
-const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+const API_URL = process.env.REACT_APP_API_URL || 'http://13.218.98.235:5000';
 
 
 async function request(path, options = {}) {
