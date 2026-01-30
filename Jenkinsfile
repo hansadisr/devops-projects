@@ -216,29 +216,19 @@ EOF
 
     post {
         success {
-            script {
-                if (params.ACTION == 'deploy') {
-                    def ec2Ip = sh(script: "cat ${TERRAFORM_DIR}/ec2_ip.txt 2>/dev/null || echo 'N/A'", returnStdout: true).trim()
-                    echo """
-                    ✅ ========================================
-                    ✅ DEPLOYMENT SUCCESSFUL!
-                    ✅ ========================================
-                    Frontend: http://${ec2Ip}:3000
-                    Backend: http://${ec2Ip}:5000
-                    SSH: ssh -i <key> ubuntu@${ec2Ip}
-                    ✅ ========================================
-                    """
-                } else {
-                    echo "✅ Infrastructure destroyed successfully!"
-                }
-            }
+            echo """
+            ✅ ========================================
+            ✅ DEPLOYMENT SUCCESSFUL!
+            ✅ ========================================
+            Build completed successfully!
+            ✅ ========================================
+            """
         }
         failure {
             echo "❌ Pipeline failed! Check the logs above for details."
         }
         always {
             echo "🧹 Cleaning up workspace..."
-            sh 'docker system prune -f || true'
         }
     }
 }
