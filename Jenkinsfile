@@ -1,6 +1,10 @@
 pipeline {
     agent any
     
+    triggers {
+        pollSCM('* * * * *')  // Poll GitHub every minute
+    }
+    
     environment {
         // Docker Hub credentials (configure in Jenkins credentials)
         DOCKER_HUB_CREDENTIALS = credentials('dockerhub-credentials')
