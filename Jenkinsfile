@@ -6,9 +6,6 @@ pipeline {
         DOCKER_HUB_CREDENTIALS = credentials('dockerhub-credentials')
         DOCKER_HUB_REPO = 'hansadisr/taskflow'
         
-        // AWS credentials (configure in Jenkins credentials)
-        AWS_CREDENTIALS = credentials('aws-credentials')
-        
         // SSH Key for EC2 (configure in Jenkins credentials)
         EC2_SSH_KEY = credentials('ec2-ssh-key')
         
