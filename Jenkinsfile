@@ -52,17 +52,6 @@ pipeline {
                 }
             }
         }
-                    """
-                    
-                    // Build frontend image
-                    sh """
-                        docker build -t ${DOCKER_HUB_REPO}-frontend:${IMAGE_TAG} \
-                                     -t ${DOCKER_HUB_REPO}-frontend:latest \
-                                     -f frontend/Dockerfile.prod ./frontend
-                    """
-                }
-            }
-        }
 
         stage('Push Docker Images') {
             when {
