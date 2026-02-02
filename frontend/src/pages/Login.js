@@ -72,7 +72,7 @@ export default function Login() {
 
   return (
     <div className="modern-form">
-      <h2 className="form-title">Welcome Back! 👋</h2>
+      <h2 className="form-title">Welcome Back!! 👋</h2>
       {msg && (
         <div className={msg.includes('Welcome') ? 'success-message' : 'error-message'}>
           {msg}
