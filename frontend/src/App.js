@@ -119,7 +119,7 @@ function AppContent() {
         <Routes>
           <Route path="/" element={
             <div className="page-container welcome-container">
-              <h1 className="welcome-title">Welcome to Task</h1>
+              <h1 className="welcome-title">Hansadi to Task</h1>
               <p className="welcome-subtitle">Organize your life, one task at a time</p>
               <div className="form-footer">
                 <button 
